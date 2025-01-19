@@ -190,7 +190,12 @@ def handleCallMenu(bot, call):
         cursor.execute("SELECT mensagem_inicio FROM mensagens LIMIT 1")
         mensagem = cursor.fetchone()
 
-        mensagem_texto = mensagem["mensagem_inicio"] if mensagem else "Mensagem padrão de início."
-        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=mensagem_texto, reply_markup=markup)
+        mensagem_texto = mensagem["mensagem_inicio"] if mensagem else "Mensagem padrão de início.																	"
+
+        if call.message.text != mensagem_texto or call.message.reply_markup != markup:
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=mensagem_texto, reply_markup=markup)
+        else:
+            print("A mensagem e o teclado são os mesmos. Nenhuma alteração necessária.")
+
         cursor.close()
         conexao.close()

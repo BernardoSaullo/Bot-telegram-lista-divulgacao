@@ -4,13 +4,15 @@ from mysql.connector import Error
 
 def conectar_ao_banco():
     try:
-        conn = mysql.connector.connect(
-            host="ItsInvictus.mysql.pythonanywhere-services.com",
-            user="ItsInvictus",
-            password="root@123",  # Substitua pela sua senha
-            database="ItsInvictus$default"
-        )
-        return conn
+       
+       return mysql.connector.connect(
+                host="127.0.0.1",
+                user="root",
+                password="root",
+                database="ItsInvictus"
+            )
+
+
     except mysql.connector.Error as err:
         return None
 

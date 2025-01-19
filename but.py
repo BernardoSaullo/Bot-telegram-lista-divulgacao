@@ -18,11 +18,11 @@ bot = telebot.TeleBot(token="7729962379:AAFWDwssjjJ2RldSg5TlJGwoHosWcvwWiGQ", pa
 def conectar_ao_banco():
     try:
         return mysql.connector.connect(
-            host="ItsInvictus.mysql.pythonanywhere-services.com",
-            user="ItsInvictus",
-            password="root@123",
-            database="ItsInvictus$default"
-        )
+                host="127.0.0.1",
+                user="root",
+                password="root",
+                database="ItsInvictus"
+            )
     except mysql.connector.Error as err:
         logging.error(f"Erro de conexão: {err}")
         return None
@@ -140,7 +140,7 @@ def handle_new_chat_member(event: ChatMemberUpdated):
             members_count = bot.get_chat_members_count(chat_id)
             print(f"Número de membros: {members_count}")
 
-            if members_count < 1:
+            if members_count < 150:
                 bot.leave_chat(chat_id)
                 bot.send_message(user_id, 'Você não tem integrantes suficientes para participar da lista🙁')
                 cursor.close()
@@ -264,7 +264,7 @@ def primeira_lista():
     for grupo_id in grupos.keys():
         i += 1
         if i == 10:
-            time.sleep(1)
+            time.sleep(5)
             i = 0
         try:
             # Seleciona 20 grupos aleatoriamente
@@ -320,7 +320,7 @@ def primeira_lista():
                 InlineKeyboardButton('⚙ 𝗔𝗗𝗜𝗖𝗜𝗢𝗡𝗔𝗥 𝗚𝗥𝗨𝗣𝗢 🔗', url="https://t.me/BravusListBot")
             )
             # Envia a mensagem e armazena a resposta
-            msg = bot.send_message('-1002288667466', mensagem_lista, reply_markup=markup, parse_mode='HTML')
+            msg = bot.send_message(grupo_id, mensagem_lista, reply_markup=markup, parse_mode='HTML')
             print(f"✅ Lista enviada para o grupo {grupo_id}.")
             # Salva os detalhes da mensagem enviada no banco de dados
             cursor.execute("""
@@ -351,8 +351,7 @@ def run_schedule():
 thread_schedule = threading.Thread(target=run_schedule,  daemon=True)
 thread_schedule.start()
 
-carregar_dados()
-primeira_lista()
+
 
 # Executar o bot.polling() no main thread
 bot.polling()
