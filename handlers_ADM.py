@@ -69,73 +69,83 @@ def handleEditar(bot, call):
         msg = bot.send_message(call.message.chat.id, "Envie o novo link de suporte (comece com http ou https):")
         aguardando_edicao_msg[call.message.chat.id] = 'Mensagem_aroba_suporte'
         bot.register_next_step_handler(msg, salvar_mensagem_editada)
+    elif call.data == 'editar_informacoes':
+        msg = bot.send_message(call.message.chat.id, "Envie o novo link de suporte (comece com http ou https):")
+        aguardando_edicao_msg[call.message.chat.id] = 'Mensagem_aroba_informacoes'
+        bot.register_next_step_handler(msg, salvar_mensagem_editada)
 
 
 def handleEditarAdm(bot, call):
+    try:
 
-    if call.data == 'adm_adicionar':
-        msg = bot.send_message(call.message.chat.id, "Envie o ID do novo administrador:")
-        aguardando_adm_id[call.message.chat.id] = {'step': 'id'}
-        print(aguardando_adm_id)
-        bot.register_next_step_handler(msg, receber_id_adm)
-
-
-    elif call.data == 'adm_excluir':
-        bot.send_message(call.message.chat.id, "Escolha o administrador que deseja excluir:", reply_markup=botoesExcluirAdm())
-
-    elif call.data.startswith('adm_excluir_'):
-
-        adm_id = call.data.split('_')[2]
-        aguardando_exclusao[call.message.chat.id] = adm_id
-        bot.send_message(call.message.chat.id, "Tem certeza que deseja excluir este administrador?", reply_markup=botoesConfirmarExlusao())
-
-    elif call.data == 'adm_confirmar_exclusao':
-
-        adm_id = aguardando_exclusao.pop(call.message.chat.id, None)
-        if adm_id:
-            conexao = conectar_ao_banco()
-            if not conexao:
-                bot.send_message(call.message.chat.id, "Erro ao acessar o banco de dados. Tente novamente mais tarde.")
-                return
-
-            cursor = conexao.cursor()
-            try:
-                # Excluir o administrador com o ID especificado
-                cursor.execute("DELETE FROM admins WHERE id_usuario = %s", (adm_id,))
-                conexao.commit()
-
-                bot.send_message(call.message.chat.id, "Administrador excluído com sucesso!")
-            except Error as e:
-                print(f"Erro ao excluir administrador no banco de dados: {e}")
-                bot.send_message(call.message.chat.id, "Erro ao processar a exclusão do administrador.")
-            finally:
-                cursor.close()
-                conexao.close()
-
-
-    elif call.data == 'adm_cancelar_exclusao':
-        aguardando_exclusao.pop(call.message.chat.id, None)
-        bot.send_message(call.message.chat.id, "Exclusão cancelada.")
+        if call.data == 'adm_adicionar':
+            msg = bot.send_message(call.message.chat.id, "Envie o ID do novo administrador:")
+            aguardando_adm_id[call.message.chat.id] = {'step': 'id'}
+            print(aguardando_adm_id)
+            bot.register_next_step_handler(msg, receber_id_adm)
+    
+    
+        elif call.data == 'adm_excluir':
+            bot.send_message(call.message.chat.id, "Escolha o administrador que deseja excluir:", reply_markup=botoesExcluirAdm())
+    
+        elif call.data.startswith('adm_excluir_'):
+    
+            adm_id = call.data.split('_')[2]
+            aguardando_exclusao[call.message.chat.id] = adm_id
+            bot.send_message(call.message.chat.id, "Tem certeza que deseja excluir este administrador?", reply_markup=botoesConfirmarExlusao())
+    
+        elif call.data == 'adm_confirmar_exclusao':
+    
+            adm_id = aguardando_exclusao.pop(call.message.chat.id, None)
+            if adm_id:
+                conexao = conectar_ao_banco()
+                if not conexao:
+                    bot.send_message(call.message.chat.id, "Erro ao acessar o banco de dados. Tente novamente mais tarde.")
+                    return
+    
+                cursor = conexao.cursor()
+                try:
+                    # Excluir o administrador com o ID especificado
+                    cursor.execute("DELETE FROM admins WHERE id_usuario = %s", (adm_id,))
+                    conexao.commit()
+    
+                    bot.send_message(call.message.chat.id, "Administrador excluído com sucesso!")
+                except Error as e:
+                    print(f"Erro ao excluir administrador no banco de dados: {e}")
+                    bot.send_message(call.message.chat.id, "Erro ao processar a exclusão do administrador.")
+                finally:
+                    cursor.close()
+                    conexao.close()
+    
+    
+        elif call.data == 'adm_cancelar_exclusao':
+            aguardando_exclusao.pop(call.message.chat.id, None)
+            bot.send_message(call.message.chat.id, "Exclusão cancelada.")
+    except Exception as e:
+        print(f"Erro na função 'handleEditar': {e}")
 
 
 def handleEditarMensagens(bot, call):
+    try:
 
-    chat_id = call.message.chat.id
-
-    if call.data == 'editar_msg_incio':
-        msg = bot.send_message(chat_id, "Envie a nova mensagem de início:")
-        aguardando_edicao_msg[chat_id] = 'Mensagem_Inicio'
-        bot.register_next_step_handler(msg, salvar_mensagem_editada)
-
-    elif call.data == 'editar_msg_regras':
-        msg = bot.send_message(chat_id, "Envie a nova mensagem de regras:")
-        aguardando_edicao_msg[chat_id] = 'Mensagem_Regras'
-        bot.register_next_step_handler(msg, salvar_mensagem_editada)
-
-    elif call.data == 'editar_msg_lista':
-        msg = bot.send_message(chat_id, "Envie a nova mensagem da lista:")
-        aguardando_edicao_msg[chat_id] = 'Mensagem_Lista'
-        bot.register_next_step_handler(msg, salvar_mensagem_editada)
+        chat_id = call.message.chat.id
+    
+        if call.data == 'editar_msg_incio':
+            msg = bot.send_message(chat_id, "Envie a nova mensagem de início:")
+            aguardando_edicao_msg[chat_id] = 'Mensagem_Inicio'
+            bot.register_next_step_handler(msg, salvar_mensagem_editada)
+    
+        elif call.data == 'editar_msg_regras':
+            msg = bot.send_message(chat_id, "Envie a nova mensagem de regras:")
+            aguardando_edicao_msg[chat_id] = 'Mensagem_Regras'
+            bot.register_next_step_handler(msg, salvar_mensagem_editada)
+    
+        elif call.data == 'editar_msg_lista':
+            msg = bot.send_message(chat_id, "Envie a nova mensagem da lista:")
+            aguardando_edicao_msg[chat_id] = 'Mensagem_Lista'
+            bot.register_next_step_handler(msg, salvar_mensagem_editada)
+    except Exception as e:
+        print(f"Erro na função 'handleEditarMensagens': {e}")
 
 def handleConfirmarExlusao(bot, call):
 
@@ -191,16 +201,16 @@ def handleListarGrupos(bot, message):
 
 
 def handle_aprova_ou_rejeita(bot, call):
-    action, identifier = call.data.split('_', 1)
-    conexao = conectar_ao_banco()
-
-    if not conexao:
-        bot.send_message(call.message.chat.id, "Erro ao acessar o banco de dados. Tente novamente mais tarde.")
-        return
-
-    cursor = conexao.cursor(dictionary=True)
-
     try:
+        action, identifier = call.data.split('_', 1)
+        conexao = conectar_ao_banco()
+    
+        if not conexao:
+            bot.send_message(call.message.chat.id, "Erro ao acessar o banco de dados. Tente novamente mais tarde.")
+            return
+    
+        cursor = conexao.cursor(dictionary=True)
+
         if action == 'aprovar':
             # Aprovar o grupo
             group_id = int(identifier)
@@ -228,7 +238,7 @@ def handle_aprova_ou_rejeita(bot, call):
                 if not grupo:
                     bot.answer_callback_query(call.id, "Grupo não encontrado!")
                     return
-
+                bot.leave_chat(group_id)
                 # Adicionar o grupo à tabela de banidos antes de excluir
                 cursor.execute("INSERT INTO grupos_e_canais_banidos (id, tipo, data_banimento) VALUES (%s, %s, %s)",
                                (grupo['id'], grupo['tipo'], datetime.datetime.now()))
@@ -272,7 +282,7 @@ def handle_aprova_ou_rejeita(bot, call):
                 bot.answer_callback_query(call.id, f"Usuário {usuario['nome_usuario']} banido com sucesso!")
 
     except Error as e:
-        print(f"Erro ao processar a solicitação: {e}")
+        print(f"Erro na função 'handleAprovar_banir': {e}")
         bot.send_message(call.message.chat.id, "Erro ao processar sua solicitação.")
     finally:
         cursor.close()
@@ -283,11 +293,14 @@ def handle_aprova_ou_rejeita(bot, call):
 
 
 def handleEditarFixados(bot, call):
-    grupo_id = int(call.data.split('selecionar_')[1])  # Extrai o ID do grupo do callback
-    # Solicita o novo ID do grupo
-    msg = bot.send_message(call.message.chat.id, f"Por favor, envie o novo ID para o grupo de ID {grupo_id}:")
-    # Define o próximo passo
-    bot.register_next_step_handler(msg, processar_id_grupo, grupo_id)
+    try:
+        grupo_id = int(call.data.split('selecionar_')[1])  # Extrai o ID do grupo do callback
+        # Solicita o novo ID do grupo
+        msg = bot.send_message(call.message.chat.id, f"Por favor, envie o novo ID para o grupo de ID {grupo_id}:")
+        # Define o próximo passo
+        bot.register_next_step_handler(msg, processar_id_grupo, grupo_id)
+    except Exception as e:
+        print(f"Erro na função 'handleEditar': {e}")
 
 
 # Função para salvar a mensagem editada
@@ -303,7 +316,13 @@ def salvar_mensagem_editada(message):
             msg = bot.send_message(chat_id, "Link inválido! Certifique-se de começar com http:// ou https://")
             bot.register_next_step_handler(msg, salvar_mensagem_editada)
             return
+        
 
+        if campo == 'editar_informacoes' and not validar_link(nova_mensagem):
+            msg = bot.send_message(chat_id, "Link inválido! Certifique-se de começar com http:// ou https://")
+            bot.register_next_step_handler(msg, salvar_mensagem_editada)
+            return
+        
         conexao = conectar_ao_banco()
 
         if not conexao:
@@ -460,3 +479,4 @@ def processar_id_grupo(message, grupo_id):
     except Exception as e:
         # Tratamento genérico de erro
         bot.send_message(message.chat.id, f"❌ Ocorreu um erro: {str(e)}")
+

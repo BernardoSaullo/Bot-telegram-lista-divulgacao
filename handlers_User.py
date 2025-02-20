@@ -56,13 +56,13 @@ def handleMenu(bot, message):
                 )
                 conexao.commit()
 
-                boas_vindas = f'Bem-vindo <a href="https://t.me/Teste1_984o64_bot">{nome_usuario}</a>!'
-                mensagem_boas_vindas = bot.send_message(message.chat.id, boas_vindas, reply_markup=botoesMenuUser())
+                boas_vindas = f'Bem-vindo <a href="https://t.me/BravusListBot">{nome_usuario}</a>!'
+
 
                 # Armazena o message_id no dicionário global
-                boas_vindas_message_ids[message.chat.id] = mensagem_boas_vindas.message_id
+
             else:
-                boas_vindas = f'Bem-vindo de volta <a href="https://t.me/Teste1_984o64_bot"><b>{nome_usuario}</b></a>!'
+                boas_vindas = f'Bem-vindo de volta <a href="https://t.me/BravusListBot"><b>{nome_usuario}</b></a>!'
 
             # Obter mensagem de início
             cursor.execute("SELECT mensagem_inicio FROM mensagens LIMIT 1")
@@ -121,8 +121,10 @@ def handleCallMenu(bot, call):
 ┗ 💬 <b>Grupos</b> : {total_grupos}
 
 📆 <b>Registro</b>: {usuario['data_registro'].strftime('%d/%m/%Y')}
+</blockquote>
+🔗 Seus Canais/Grupo
 
-🔗 Seus Canais/Grupos</blockquote>"""
+"""
 
             # Buscar grupos e canais do usuário
             cursor.execute("SELECT nome, link, apro FROM grupos_e_canais WHERE id_usuario = %s", (user_id,))

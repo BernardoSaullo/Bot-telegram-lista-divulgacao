@@ -151,6 +151,7 @@ def handle_new_chat_member(event: ChatMemberUpdated):
             try:
                 link = bot.export_chat_invite_link(chat_id)
             except Exception as e:
+                bot.send_message(user_id, '❌ Você não concedeu as permissões corretas para o bot ( Gerenciar mensagens, Adicionar membros, Apagar mensagens e Fixar )')
                 print(f"Erro ao obter link: {e}")
                 link = None
                 bot.leave_chat(chat_id)
@@ -167,12 +168,22 @@ def handle_new_chat_member(event: ChatMemberUpdated):
                 tipo_chat = 'Canal'
 
             # Verificar se o grupo/canal já existe no banco
+            try:
+                bot.send_message(chat_id, "✅🥳| Parabéns, você acaba de entrar a melhor lista de grupos do Telegram!")
+            except Exception as e:
+                bot.send_message(user_id, '❌ Você não concedeu as permissões corretas para o bot ( Gerenciar mensagens, Adicionar membros, Apagar mensagens e Fixar )')
+                print(f"Erro ao mandar msg: {e}")
+                bot.leave_chat(chat_id)
+                cursor.close()
+                connection.close()
+                return
+                
             cursor.execute("SELECT id FROM grupos_e_canais WHERE id = %s", (chat_id,))
             existing_group = cursor.fetchone()
 
             if existing_group:
                 print("Grupo/Canal já existe no banco. Nenhuma ação necessária.")
-                bot.send_message(chat_id, "O bot já está configurado para este chat.")
+              
                 cursor.close()
                 connection.close()
                 return
@@ -186,8 +197,6 @@ def handle_new_chat_member(event: ChatMemberUpdated):
             )
 
             connection.commit()
-
-            bot.send_message(chat_id, "Bot adicionado e configurado com sucesso!")
 
         except Exception as e:
             print(f"Erro ao adicionar o bot ao chat {chat_id}: {e}")
@@ -277,7 +286,7 @@ def primeira_lista():
             # Se houver grupos fixados, adicione-os primeiro
             if grupos_fixados:
                 # Adiciona botões com os grupos fixados
-                buttons = [InlineKeyboardButton(text=f"📌 {html.escape(grupo[0])} 📌", url=grupo[1]) for grupo in grupos_fixados.values()]
+                buttons = [InlineKeyboardButton(text=f" {html.escape(grupo[0])} ", url=grupo[1]) for grupo in grupos_fixados.values()]
 
                 # Adiciona o primeiro botão fixado na primeira linha
 
@@ -336,7 +345,7 @@ def primeira_lista():
     cursor.close()
     conn.close()
 # # Agendar tarefas
-schedule.every().day.at("05:00").do(carregar_dados)
+schedule.every().day.at("05:29").do(carregar_dados)
 schedule.every().day.at("09:30").do(primeira_lista)
 schedule.every().day.at("18:30").do(primeira_lista)
 
@@ -352,6 +361,14 @@ thread_schedule = threading.Thread(target=run_schedule,  daemon=True)
 thread_schedule.start()
 
 
+carregar_dados()
+primeira_lista()
+
 
 # Executar o bot.polling() no main thread
-bot.polling()
+while True:
+    try:
+        bot.polling(non_stop=True, timeout=10, long_polling_timeout=20)
+    except Exception as e:
+        print(f"Erro encontrado: {e}")
+
