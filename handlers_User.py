@@ -7,19 +7,9 @@ from telebot import types
 import re
 import datetime
 
-def conectar_ao_banco():
-    try:
-        return mysql.connector.connect(
-                host="127.0.0.1",
-                user="root",
-                password="root",
-                database="ItsInvictus"
-            )
-    except mysql.connector.Error as err:
-        return None
 
 # Token do bot
-bot = telebot.TeleBot(token="7729962379:AAFWDwssjjJ2RldSg5TlJGwoHosWcvwWiGQ", parse_mode='HTML')
+from config import conectar_ao_banco, bot
 
 # Dicionário global para armazenar o message_id por chat_id ou user_id
 boas_vindas_message_ids = {}
@@ -36,10 +26,11 @@ def handleMenu(bot, message):
         # Consultar IDs banidos
         cursor.execute("SELECT id FROM usuarios_banidos")
         ids_banidos = [banido["id"] for banido in cursor.fetchall()]
+        print(ids_banidos)
 
         id_usuario = message.from_user.id
-
-        if id_usuario not in ids_banidos:
+        print(id_usuario)
+        if str(id_usuario) not in ids_banidos:
             nome_usuario = message.from_user.first_name if message.from_user.first_name else "Não informado"
 
             # Verificar se o usuário já existe

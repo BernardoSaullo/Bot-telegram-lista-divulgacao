@@ -1,27 +1,16 @@
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 import mysql.connector
 from mysql.connector import Error
-
-def conectar_ao_banco():
-    try:
-       
-       return mysql.connector.connect(
-                host="127.0.0.1",
-                user="root",
-                password="root",
-                database="ItsInvictus"
-            )
+from config import conectar_ao_banco, bot
 
 
-    except mysql.connector.Error as err:
-        return None
 
 
 def botoesMenuAdm():
     markup = InlineKeyboardMarkup()
 
     markup.add(InlineKeyboardButton('👑Editar ADMs', callback_data='editar_adms'))
-    markup.add(InlineKeyboardButton('📌Editar Canais e Grupos Fixados', callback_data='editar_fixados'))
+    markup.add(InlineKeyboardButton('📌Editar Botões Fixados', callback_data='editar_fixados'))
     markup.add(InlineKeyboardButton('💬Editar Mensagens', callback_data='editar_mensagens'))
     markup.add(InlineKeyboardButton('🏷️Editar Suporte', callback_data='editar_suporte'))
     markup.add(InlineKeyboardButton('ℹ Editar Informações', callback_data='editar_informacoes'))
@@ -52,15 +41,16 @@ def botoesEditarFixados():
 
     cursor = conexao.cursor(dictionary=True)
     try:
-        cursor.execute("SELECT id, nome FROM grupos_e_canais WHERE fixado = TRUE")
-        grupos_fixados = cursor.fetchall()
+        cursor.execute("SELECT id, nome FROM fixados")
+        botoes_fixados = cursor.fetchall()
 
-        if not grupos_fixados:
+        if not botoes_fixados:
             return None
 
         # Cria uma inline keyboard com os botões dos grupos fixados
         markup = InlineKeyboardMarkup()
-        for grupo in grupos_fixados:
+        for grupo in botoes_fixados:
+
             button = InlineKeyboardButton(text=grupo["nome"], callback_data=f"selecionar_{grupo['id']}")
             markup.add(button)
 
@@ -78,8 +68,11 @@ def botoesEditarMensagens():
     markup.add(InlineKeyboardButton('Editar Mensagem de Incio', callback_data='editar_msg_incio'))
     markup.add(InlineKeyboardButton('Editar Mensagem de Regras', callback_data='editar_msg_regras'))
     markup.add(InlineKeyboardButton('Editar Mensagem Lista', callback_data='editar_msg_lista'))
+    markup.add(InlineKeyboardButton('Editar Mensagem de Disparo em Massa', callback_data='editar_msg_disparo'))
 
     return markup
+
+
 
 def botoesExcluirAdm():
     # Consulta os admins no banco de dados

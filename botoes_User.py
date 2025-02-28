@@ -1,20 +1,8 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import mysql.connector
+from config import conectar_ao_banco
 
 
-
-def conectar_ao_banco():
-    # Função de conexão com o banco de dados MySQL
-    try:
-        return mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="root",  # Substitua pela sua senha correta
-            database="ItsInvictus"  # Substitua pelo seu nome de banco de dados
-        )
-    except mysql.connector.Error as err:
-        print(f"Erro ao acessar o banco de dados: {err}")
-        return None
 
 def botoesMenuUser():
     # Criação do teclado
@@ -93,8 +81,8 @@ def botoesAdicaoCanalouGrupo():
     markup = InlineKeyboardMarkup()
 
     markup.row(
-        InlineKeyboardButton("Adicionar Grupo 👥", url='http://t.me/BravusListBot?startgroup&admin=delete_messages+invite_users+pin_messages'),
-        InlineKeyboardButton("Adicionar Canal 📢", url='http://t.me/BravusListBot?startchannel&admin=post_messages+edit_messages+delete_messages+invite_users+pin_messages+manager_chat')
+        InlineKeyboardButton("Adicionar Grupo 👥", url='http://t.me/Teste1_984o64_bot?startgroup&admin=delete_messages+invite_users+pin_messages'),
+        InlineKeyboardButton("Adicionar Canal 📢", url='http://t.me/Teste1_984o64_bot?startchannel&admin=post_messages+edit_messages+delete_messages+invite_users+pin_messages+manager_chat')
     )
 
     # Adicionando o botão "🏠 Início"
